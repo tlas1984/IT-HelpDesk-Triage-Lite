@@ -9,7 +9,7 @@ This project implements a simplified IT Help Desk Triage system designed to mana
 
 ## Team Members
 - Tracie Laster  
-- Jedidiah Money  
+- JT Money  
 
 ---
 
