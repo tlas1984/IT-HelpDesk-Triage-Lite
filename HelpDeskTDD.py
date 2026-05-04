@@ -20,7 +20,6 @@ class HelpDeskSystem:
     # SR-03: Assign priority based on category and urgency
     def create_ticket(self, category, issue_info, urgency):
 
-        # Category base values from refined SR-03 logic
         category_values = {
             "Network": 3,
             "Software": 2,
@@ -28,16 +27,13 @@ class HelpDeskSystem:
             "General": 1
         }
 
-        # Urgency modifier from refined priority logic
         urgency_values = {
             "High": 1,
             "Low": 0
         }
 
-        # Calculate numeric priority instead of returning hardcoded text only
         priority = category_values.get(category, 1) + urgency_values.get(urgency, 0)
 
-        # Create ticket data so tests can validate actual system behavior
         ticket = {
             "category": category,
             "issue_info": issue_info,
@@ -50,11 +46,11 @@ class HelpDeskSystem:
 
         return "Incident created", priority
 
-    # SR-04 / SR-07: Check whether two ticket descriptions are duplicates
+    # SR-04 / SR-07: Duplicate detection
     def detect_duplicate(self, existing_ticket, new_ticket):
         return existing_ticket.lower() == new_ticket.lower()
 
-    # SR-06: Update ticket status using valid status values
+    # SR-06: Status update
     def update_status(self, status):
         valid_statuses = ["Open", "In Progress", "Resolved"]
 
@@ -63,14 +59,14 @@ class HelpDeskSystem:
 
         return "Invalid status"
 
-    # SR-07: Assign queue based on ticket category
+    # SR-07: Queue assignment
     def assign_queue(self, category):
         if category == "Network":
             return "Network Support"
 
         return "General Support"
 
-    # SR-08: Generate report only for supported formats
+    # SR-08: Report generation
     def generate_report(self, output_format):
         valid_formats = ["pdf", "xlsx", "csv"]
 
@@ -80,17 +76,34 @@ class HelpDeskSystem:
         return "Invalid report format"
 
 
+# ===== 🔥 DEMO RUN (ADD THIS FOR PRESENTATION) =====
+def demo_run():
+    system = HelpDeskSystem()
+
+    print("=== DEMO: Creating Ticket ===")
+    message, priority = system.create_ticket("Network", "Internet down", "High")
+    print(f"Message: {message}")
+    print(f"Priority Score: {priority}")
+
+    print("\n=== DEMO: Assigning Queue ===")
+    queue = system.assign_queue("Network")
+    print(f"Assigned Queue: {queue}")
+
+    print("\n=== DEMO: Duplicate Check ===")
+    duplicate = system.detect_duplicate("Internet down", "Internet down")
+    print(f"Duplicate Found: {duplicate}")
+
+    print("\n=== DEMO: Status Update ===")
+    status = system.update_status("Resolved")
+    print(f"Updated Status: {status}")
+
+
 class TestHelpDeskSystem(unittest.TestCase):
 
-    # Setup runs before every test
     def setUp(self):
         self.system = HelpDeskSystem()
 
-    # Test Case: SR03 Priority Assignment (Happy Path)
-    # Purpose: Verify High urgency with Network category assigns highest priority score
-    # Traceability: (SR-03, PY-PRIORITY-01)
     def test_SR03_priority_assignment_happy(self):
-
         message, priority = self.system.create_ticket(
             "Network",
             "Internet down",
@@ -100,11 +113,7 @@ class TestHelpDeskSystem(unittest.TestCase):
         self.assertEqual(message, "Incident created")
         self.assertEqual(priority, 4)
 
-    # Test Case: SR03 Priority Assignment (Edge Case)
-    # Purpose: Verify Low urgency with General category assigns lowest priority score
-    # Traceability: (SR-03, PY-PRIORITY-01)
     def test_SR03_priority_assignment_edge(self):
-
         message, priority = self.system.create_ticket(
             "General",
             "Slow internet",
@@ -114,11 +123,7 @@ class TestHelpDeskSystem(unittest.TestCase):
         self.assertEqual(message, "Incident created")
         self.assertEqual(priority, 1)
 
-    # Test Case: SR04/SR07 Duplicate Detection (Happy Path)
-    # Purpose: Verify matching ticket descriptions can be identified as duplicates
-    # Traceability: (SR-07, PY-VALID-01)
     def test_SR04_duplicate_detection_happy(self):
-
         result = self.system.detect_duplicate(
             "Internet down",
             "Internet down"
@@ -126,11 +131,7 @@ class TestHelpDeskSystem(unittest.TestCase):
 
         self.assertTrue(result)
 
-    # Test Case: SR04/SR07 Duplicate Detection (Edge Case)
-    # Purpose: Verify different ticket descriptions are not duplicates
-    # Traceability: (SR-07, PY-VALID-01)
     def test_SR04_duplicate_detection_edge(self):
-
         result = self.system.detect_duplicate(
             "Internet down",
             "Printer not working"
@@ -138,60 +139,32 @@ class TestHelpDeskSystem(unittest.TestCase):
 
         self.assertFalse(result)
 
-    # Test Case: SR06 Status Update (Happy Path)
-    # Purpose: Verify valid ticket status can be updated
-    # Traceability: (SR-06, PY-TIME-01)
     def test_SR06_status_update_happy(self):
-
         status = self.system.update_status("Resolved")
-
         self.assertEqual(status, "Resolved")
 
-    # Test Case: SR06 Status Update (Edge Case)
-    # Purpose: Verify invalid status values are rejected
-    # Traceability: (SR-06, PY-TIME-01)
     def test_SR06_status_update_edge(self):
-
         status = self.system.update_status("Closed")
-
         self.assertEqual(status, "Invalid status")
 
-    # Test Case: SR07 Queue Assignment (Happy Path)
-    # Purpose: Verify Network tickets go to Network Support
-    # Traceability: (SR-07, PY-VALID-01)
     def test_SR07_queue_assignment_happy(self):
-
         queue = self.system.assign_queue("Network")
-
         self.assertEqual(queue, "Network Support")
 
-    # Test Case: SR07 Queue Assignment (Edge Case)
-    # Purpose: Verify non-Network categories go to General Support
-    # Traceability: (SR-07, PY-VALID-01)
     def test_SR07_queue_assignment_edge(self):
-
         queue = self.system.assign_queue("Hardware")
-
         self.assertEqual(queue, "General Support")
 
-    # Test Case: SR08 Report Generation (Happy Path)
-    # Purpose: Verify system generates a report for a valid format
-    # Traceability: (SR-08, PY-OUTPUT-02)
     def test_SR08_report_generation_happy(self):
-
         report_status = self.system.generate_report("pdf")
-
         self.assertEqual(report_status, "Report generated")
 
-    # Test Case: SR08 Report Generation (Edge Case)
-    # Purpose: Verify invalid report format is rejected
-    # Traceability: (SR-08, PY-OUTPUT-02)
     def test_SR08_report_generation_edge(self):
-
         report_status = self.system.generate_report("doc")
-
         self.assertEqual(report_status, "Invalid report format")
 
 
 if __name__ == "__main__":
+    demo_run()   # 👈 THIS CREATES YOUR LIVE DEMO OUTPUT
+    print("\n--- Running Tests ---\n")
     unittest.main()
