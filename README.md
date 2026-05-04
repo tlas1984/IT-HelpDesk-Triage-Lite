@@ -48,7 +48,16 @@ This project implements a simplified IT Help Desk Triage system designed to mana
 
 ### 6. Deployment
 - Prepared system for execution in a controlled environment  
-- Defined dependencies and setup instructions  
+- Defined dependencies and setup instructions
+ ## Deployment Instructions
+
+1. Install Python 3.x.
+2. Clone or download this repository.
+3. Run setup:
+   
+---bash
+.setup.sh
+
 
 ### 7. Maintenance and Evolution
 - Planned for future updates and bug fixes  
